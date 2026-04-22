@@ -1,0 +1,15 @@
+# Go
+backend/tmp/
+*.exe
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Docker
+.DS_Store
