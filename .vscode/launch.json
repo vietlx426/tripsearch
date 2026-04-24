@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Backend",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/backend/cmd/api/main.go",
+      "env": {
+        "DATABASE_URL": "postgres://tripsearch:tripsearch@localhost:5432/tripsearch?sslmode=disable",
+        "REDIS_URL": "redis://localhost:6379"
+      }
+    }
+  ]
+}

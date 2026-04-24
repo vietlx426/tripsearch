@@ -1,0 +1,38 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/hotels
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "The Grand Hotel",
+    "description": "A luxury hotel in the heart of the city",
+    "property_type": "hotel",
+    "address": "123 Main Street",
+    "city": "New York",
+    "country": "USA",
+    "latitude": 40.712776,
+    "longitude": -74.005974,
+    "price_per_night": "199.99",
+    "currency": "USD",
+    "star_rating": 5,
+    "status": "active"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

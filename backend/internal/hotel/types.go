@@ -59,6 +59,7 @@ type Service interface {
 var (
 	ErrHotelNotFound = errors.New("user not found")
 	ErrDuplicateHotel = errors.New("duplicate hotel")
+	ErrUnauthorized = errors.New("Unauthorized update")
 )
 
 type CreateRequest struct {

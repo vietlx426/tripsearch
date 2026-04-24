@@ -73,6 +73,51 @@ func (s *service) List(ctx context.Context) ([]HotelDTO, error) {
 	return dtos, nil
 }
 
+func (s *service) Update(ctx context.Context, hostID uuid.UUID, id uuid.UUID, req UpdateRequest) (*HotelDTO, error) {
+	hotel, err := s.repo.FindByID(ctx, id);
+	if err != nil {
+		if errors.Is(err, ErrHotelNotFound) {
+			return nil, ErrHotelNotFound
+		}
+		return nil, fmt.Errorf("Update: %w", err)
+	}
+	if hotel.HostID != hostID {
+		return nil, ErrUnauthorized
+	}
+	updated, err := s.repo.Update(ctx, db.UpdateHotelParams{
+		ID: id,
+		Name:          req.Name,
+		Description:   sql.NullString{String: ptrStr(req.Description), Valid: req.Description != nil},
+		PropertyType:  req.PropertyType,
+		Address:       sql.NullString{String: ptrStr(req.Address), Valid: req.Address != nil},
+		City:          req.City,
+		Country:       req.Country,
+		Latitude:      sql.NullString{String: ptrFloat(req.Latitude), Valid: req.Latitude != nil},
+		Longitude:     sql.NullString{String: ptrFloat(req.Longitude), Valid: req.Longitude != nil},
+		PricePerNight: req.PricePerNight,
+		Currency:      req.Currency,
+		StarRating:    sql.NullInt32{Int32: ptrInt32(req.StarRating), Valid: req.StarRating != nil},
+		Status:        statusOrDefault(req.Status),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Update: %w", err)
+	}
+	return toHotelDTO(updated, nil), nil
+}
+func (s *service) Delete(ctx context.Context, hostID uuid.UUID, id uuid.UUID) error {
+	hotel, err := s.repo.FindByID(ctx, id);
+	if err != nil {
+		if errors.Is(err, ErrHotelNotFound) {
+			return ErrHotelNotFound
+		}
+		return fmt.Errorf("Delete: %w", err)
+	}
+	if hotel.HostID != hostID {
+		return ErrUnauthorized
+	}
+	return s.repo.Delete(ctx, id)
+}
+
 // helpers
 
 func ptrStr(s *string) string {

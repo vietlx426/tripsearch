@@ -7,8 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/vietlx426/tripsearch/db/sqlc"
+	db "github.com/vietlx426/tripsearch/db/sqlc"
 	"github.com/vietlx426/tripsearch/internal/auth"
+	"github.com/vietlx426/tripsearch/internal/hotel"
 	"github.com/vietlx426/tripsearch/internal/user"
 	"github.com/vietlx426/tripsearch/pkg/cache"
 	"github.com/vietlx426/tripsearch/pkg/logger"
@@ -50,6 +51,10 @@ func main() {
 	userSvc     := user.NewService(userRepo)
 	userHandler := user.NewHandler(userSvc)
 
+	hotelRepo := hotel.NewRepository(queries)
+	hotelSvc := hotel.NewService(hotelRepo)
+	hotelHandler := hotel.NewHandler(hotelSvc)
+
 	r := gin.New()
 	r.Use(
 		middleware.RequestID(),
@@ -76,6 +81,15 @@ func main() {
 		userRoutes.Use(middleware.JWT(jwtSecret))
 		{
 			userRoutes.GET("/me", userHandler.GetMe)
+		}
+
+		hotelRoutes := v1.Group("/hotels")
+		hotelRoutes.Use(middleware.JWT(jwtSecret))
+		{
+			hotelRoutes.POST("", hotelHandler.Create)
+			hotelRoutes.GET("", hotelHandler.List)
+			hotelRoutes.PUT("", hotelHandler.Update)
+			hotelRoutes.DELETE("", hotelHandler.Delete)
 		}
 	}
 
